@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', function(){
 
-    const chart_width = $('.tabcontent').width();
-    const chart_height = chart_width * 0.6;
+    let chart_width = $('.tabcontent').width();
+    // const chart_width = document.querySelector('.tabcontent').getBoundingClientRect();
+    console.log('chart_width: ', chart_width);
+    let chart_height = chart_width * 0.6;
     const color = d3.scaleThreshold().range([    // scaleQuantize
         'rgb(255,255,178)',
         'rgb(254,217,118)',
@@ -173,40 +175,53 @@ document.addEventListener('DOMContentLoaded', function(){
         d3.select('#confirmedCasesInUS').text(numberWithCommas(totalConfirmedCasesNum));
         d3.select('#deathsInUS').text(numberWithCommas(totalDeathsNum));
 
-        map.selectAll('.county')
-            .data(counties)
-            .enter()
-            .append('path')
-            .attr('class', 'county')
-            .attr('d', path)
-            .attr('fill', function(d){
-                const cases = d.properties.covidCases;
-                return cases ? color(cases) : '#fff';
-                // return cases ? d3.interpolateYlOrRd(Math.log(cases)/Math.log(10)/6) : '#fff';
-            })
-            .attr('stroke', 'transparent')
-            .attr('stroke-width', 1)
-            .on('mouseover', function(d){
-                tooltip.transition()
-                    .duration(200)
-                    .style('opacity', 0.9);
-                tooltip.html(`
-                        <strong>${d.properties.name}</strong><br>
-                        Confirmed: <span style='color: red; font-weight: bold;'>${d.properties.covidCases ? numberWithCommas(d.properties.covidCases) : 0}</span> cases<br>
-                        Deaths: <span style='color: red; font-weight: bold;'>${d.properties.covidDeaths ? numberWithCommas(d.properties.covidDeaths) : 0}</span>
-                    `);
+        updateCounties(counties);
 
-                const tooltipWidth = document.querySelector('.tooltip').offsetWidth;
-                const tooltipHeight = document.querySelector('.tooltip').offsetHeight;
+        function updateCounties(counties){
+            const countySelection = map.selectAll('.county');
+            const bindingCountyData = countySelection.data(counties);
+            
+            bindingCountyData.enter()
+                .append('path')
+                .attr('class', 'county')
+                .attr('d', path)
+                .attr('fill', function(d){
+                    const cases = d.properties.covidCases;
+                    return cases ? color(cases) : '#fff';
+                    // return cases ? d3.interpolateYlOrRd(Math.log(cases)/Math.log(10)/6) : '#fff';
+                })
+                .attr('stroke', 'transparent')
+                .attr('stroke-width', 1)
+                .on('mouseover', function(d){
+                    tooltip.transition()
+                        .duration(200)
+                        .style('opacity', 0.9);
+                    tooltip.html(`
+                            <strong>${d.properties.name}</strong><br>
+                            Confirmed: <span style='color: red; font-weight: bold;'>${d.properties.covidCases ? numberWithCommas(d.properties.covidCases) : 0}</span> cases<br>
+                            Deaths: <span style='color: red; font-weight: bold;'>${d.properties.covidDeaths ? numberWithCommas(d.properties.covidDeaths) : 0}</span>
+                        `);
 
-                tooltip.style('left', d3.mouse(this)[0] - (tooltipWidth / 2) + 'px')
-                    .style('top', d3.mouse(this)[1] - (tooltipHeight + 24) + 'px');
-            })
-            .on('mouseout', function(d){
-                tooltip.transition()
-                    .duration(200)
-                    .style('opacity', 0);
-            });
+                    const tooltipWidth = document.querySelector('.tooltip').offsetWidth;
+                    const tooltipHeight = document.querySelector('.tooltip').offsetHeight;
+
+                    tooltip.style('left', d3.mouse(this)[0] - (tooltipWidth / 2) + 'px')
+                        .style('top', d3.mouse(this)[1] - (tooltipHeight + 24) + 'px');
+                })
+                .on('mouseout', function(d){
+                    tooltip.transition()
+                        .duration(200)
+                        .style('opacity', 0);
+                });
+
+            bindingCountyData.select('.county')
+                .attr('fill', function(d){
+                    const cases = d.properties.covidCases;
+                    return cases ? color(cases) : '#fff';
+                    // return cases ? d3.interpolateYlOrRd(Math.log(cases)/Math.log(10)/6) : '#fff';
+                });
+        }
+        
 
         // topojson feature converts
         const states = topojson.feature(values[0], values[0].objects.states).features;
@@ -219,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function(){
             .attr('class', 'state')
             .attr('d', path)
             .attr('fill', 'none')
-            .attr('stroke', '#424242')
+            .attr('stroke', '#3b3b3b')
             .attr('stroke-width', 1)
             .on('click', function(d){
                 console.log('clicked state');
@@ -242,8 +257,50 @@ document.addEventListener('DOMContentLoaded', function(){
 
         renderTable(values[2], false);
 
+        // show more button
         $('.showMoreButton').on('click', function(){
             renderTable(values[2], true);
+        });
+
+        d3.select(window).on('resize', function(){
+            // get new width and height
+            chart_width = $('.tabcontent').width();
+            chart_height = chart_width * 0.6;
+
+            svg.attr('width', chart_width)
+                .attr('height', chart_height)
+
+            // update projection
+            projection
+                .translate([chart_width / 2, chart_height / 2])
+                .scale(1);
+
+            svg.selectAll('.county')
+                .transition()
+                .attr('d', path);
+
+            svg.selectAll('.state')
+                .transition()
+                .attr('d', path);
+
+            svg.selectAll('.capitalCircle')
+                .transition()
+                .attr('cx', function(d){
+                    return projection([d.longitude, d.latitude])[0];
+                })
+                .attr('cy', function(d){
+                    return projection([d.longitude, d.latitude])[1];
+                });
+
+            svg.selectAll('.capitalName')
+                .transition()
+                .attr('x', function(d){
+                    return projection([d.longitude, d.latitude])[0];
+                })
+                .attr('y', function(d){
+                    return projection([d.longitude, d.latitude])[1] - 7;
+                });
+
         });
 
         // map.selectAll('.capitalName')

@@ -149,23 +149,25 @@ section{
     width: 84%;
     justify-content: space-between;
     position: relative;
+    font-size: 14px;
 }
 #displayTicksForGradient div{
     position: absolute;
     transform: translateX(-50%);
 }
 
+.coronaVirusTableContainer{
+    overflow-x: auto;
+}
 .myTable{
     font-size: 14px;
     max-width: 600px;
-    display: inline-block;
+    margin: 0 auto;
 }
 .myTable thead{
     font-weight: bold;
 }
-td:first-child, td:nth-child(2){
-    min-width: 95px;
-}
+
 
 /*media query----------------------------------------*/
 /*tablets*/

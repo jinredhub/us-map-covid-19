@@ -1,0 +1,182 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'Quicksand', sans-serif;
+    background-color: #b2b7d2;
+}
+section{
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+.tabcontent{
+    padding: 6px 0;
+    border: none;
+    background-color: white;
+    box-shadow: 0 8px 30px rgb(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 50px 20px;  
+    padding-top: 60px;
+    top: 0;
+    margin: 60px 0;
+}
+
+#loading{
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: 100px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    color: #4f4f4f;
+    z-index: 50;
+}
+
+#navbar{
+    height: 70px;
+    border-bottom: 1px solid black;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    left: 0;
+    top: 0;
+    z-index: 100;
+}
+#navbar a{
+    color: #989898;
+    padding: 12px 16px;
+    font-weight: bold;
+    text-decoration: none;
+}
+#navbar .active{
+    color: #3b3b3b;
+}
+
+/* map------------------------------ */
+#renderMap{
+    position: relative;
+}
+.selected{
+    fill: yellow;
+}
+.county:hover{
+    stroke: black;
+}
+
+
+.tooltip{
+    position: absolute;
+    z-index: 1001;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+    padding: 6px 12px;
+    border: 1px solid #000;
+    border-radius: 2px;
+    line-height: 150%;
+}
+.controller{
+    position: absolute;
+    bottom: 10%;
+    right: 10%;
+    background-color: white;
+    text-align: center;
+    /* border: 1px solid gray; */
+    border-radius: 8px;
+    box-shadow: 0px 1px 4px rgba(0,0,0,0.3);
+    padding: 0 4px;
+}
+.controller button{
+    border: none;
+    background-color: transparent;
+    padding: 8px;
+    cursor: pointer;
+    outline: none;
+    color: #757575;
+}
+.controller button:hover{
+    color: #404040;
+}
+.controller button:active{
+    color: #757575;
+}
+
+/* title section----------------------- */
+#confirmedCasesInUS, #deathsInUS{
+    font-size: 52px;
+    font-weight: bold;
+}
+
+.casesContainer, .deathContainer{
+    padding: 20px 0;
+    text-align: center;
+}
+#mainTitleDiv{
+    text-align: center;
+    padding: 10px 0 30px 0;
+}
+#mainTitleDiv h1{
+    font-size: 22px;
+    font-family: 'Pragati Narrow', sans-serif;
+}
+#mainTitleDiv div{
+    max-width: 440px;
+    font-style: italic;
+    display: inline-block;
+    color: rgba(0, 0, 0, 0.6);
+}
+.garadientImageDiv{
+    padding: 20px 20px 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.garadientImageDiv img{
+    width: 84%;
+    height: 12px;
+}
+#displayTicksForGradient{
+    display: flex;
+    width: 84%;
+    justify-content: space-between;
+    position: relative;
+}
+#displayTicksForGradient div{
+    position: absolute;
+    transform: translateX(-50%);
+}
+
+.myTable{
+    font-size: 14px;
+    max-width: 600px;
+    display: inline-block;
+}
+.myTable thead{
+    font-weight: bold;
+}
+td:first-child, td:nth-child(2){
+    min-width: 95px;
+}
+
+/*media query----------------------------------------*/
+/*tablets*/
+@media (max-width: 768px){
+    .CasesDeathContainer{
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 590px){
+    .myTable td{
+        padding: 4px 2px;
+    }
+}

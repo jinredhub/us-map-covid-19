@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>COVID-19 Cases</title>
+    <!-- favicon -->
+    <link rel="shortcut icon" href="./assets/favicon.ico">
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@400;700&display=swap" rel="stylesheet">
+    <!-- font awesome -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+    <!-- normalize -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+    integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+
+    <!-- d3 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js"></script>
+    <!-- <script src="https://d3js.org/topojson.v2.min.js"></script> -->
+    <!-- Topojson library -->
+    <script src="https://unpkg.com/topojson@3"></script>
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/mainStyle.css">
+
+</head>
+
+<body>
+    <nav id='navbar'>
+        <div>
+            <a href="https://jinredhub.github.io/arpeggios/">Arpeggios</a>
+            <a href="https://jinredhub.github.io/daw/" class='active'>DAW</a>            
+        </div>
+
+        <button type='button' id='questionButton'><i class="fas fa-question" style='font-size: 21px; color: #646464;'></i></button>
+
+    </nav>
+
+    <section>    
+        <div class="tabcontent">
+           
+            <div class='CasesDeathContainer disp-flex flex-wrap justify-content--center'>
+                <div class="casesContainer">
+                    <div id='confirmedCasesInUS'></div>
+                    <div class='padding-tb-2'>Confirmed cases in U.S.</div>
+                </div>
+                <div style='width: 50px;'></div>
+                <div class="deathContainer">
+                    <div id='deathsInUS'></div>
+                    <div class='padding-tb-2'>Deaths in U.S.</div>
+                </div>
+            </div>
+
+            <div id='mainTitleDiv'>
+                <h1>Confirmed cases of coronavirus in the United States</h1>
+                <div>Hover over a state to see how many confired cases and deaths there are across the county.</div>
+            </div>
+            
+            <div id='renderMap'></div>
+            <div class='garadientImageDiv'>
+                <img src="./assets/gradient.png" alt="">
+                <div id='displayTicksForGradient'>
+                    <div style='left: 16.66%'>10</div>
+                    <div style='left: 33.33%'>100</div>
+                    <div style='left: 50%'>1k</div>
+                    <div style='left: 66.65%'>10k</div>
+                    <div style='left: 83.3%'>100k</div>
+                </div>
+            </div>
+
+            <div class='space2'></div>
+
+            <div style='text-align: center; overflow-x: auto;'>
+                <table class="myTable">
+                    <thead>
+                        <tr>
+                            <td>State</td>
+                            <td>County</td>
+                            <td>Cases</td>
+                            <td>Deaths</td>        
+                         </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>  
+
+                <button type='button' class='btn btn-long showMoreButton'>SHOW MORE</button>
+            </div>
+
+                      
+
+        </div>
+    </section>
+    
+    <div id="loading"><i class="fas fa-spinner fa-spin" style='color: #a8a8a8;'></i></div>
+
+    <!-- footer -->
+    <footer id='footer' class='disp-flex justify-content--center align-items--center flex-dir-col'>
+        <div style='padding: 0 0 30px 0;'>
+            <a class='btn github' href="https://github.com/jinredhub"><i class="fab fa-github-alt" style='color: black;'></i></a>
+        </div>
+        <p style='color: white;'>Jin Redmond</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+
+</body>
+
+</html>

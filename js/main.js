@@ -122,13 +122,14 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // load files
     const files = [
-        d3.json('/assets/counties-10m.json'),
-        d3.csv('/assets/us-state-capitals.csv'),
+        d3.json('./assets/counties-10m.json'),
+        d3.csv('./assets/us-state-capitals.csv'),
         // d3.csv('/assets/covid-us-counties-month.csv'),
-        d3.csv('/assets/covid-us-counties.csv'),
+        d3.csv('./assets/covid-us-counties.csv'),
     ];
 
     Promise.all(files.map(url => (url))).then(function(values){
+        console.log('aa');
         console.log('values: ', values);
 
         const filterDate = '2020-10-26'.split('-').join('');

@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function(){
         // d3.csv('/assets/covid-us-counties-month.csv'),
         d3.csv('./assets/covid-us-counties.csv'),
     ];
+    console.log('aa');
 
     Promise.all(files.map(url => (url))).then(function(values){
         console.log('aa');

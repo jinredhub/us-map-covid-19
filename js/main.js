@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function(){
+    // loading icon------------------------------------
+    $('#loading').css('display', 'flex');
 
     let chart_width = $('.tabcontent').width();
     // const chart_width = document.querySelector('.tabcontent').getBoundingClientRect();
@@ -31,6 +33,13 @@ document.addEventListener('DOMContentLoaded', function(){
             [1000, 500]
         ])
         .on('zoom', function(){
+            // svg.selectAll('path').attr('stroke-width', () =>{
+            //     const {k, x, y} = d3.event.transform;
+            //     return STORK_WIDTH /k;
+            // })
+            // .attr('transform', d3.event.transform);
+
+            // original code================================
             const offset = [
                 d3.event.transform.x,
                 d3.event.transform.y
@@ -44,15 +53,15 @@ document.addEventListener('DOMContentLoaded', function(){
             
             // update all shapes and paths
             svg.selectAll('.county')
-                .transition()
+                // .transition()
                 .attr('d', path);
 
             svg.selectAll('.state')
-                .transition()
+                // .transition()
                 .attr('d', path);
 
             svg.selectAll('.capitalCircle')
-                .transition()
+                // .transition()
                 .attr('cx', function(d){
                     return projection([d.longitude, d.latitude])[0];
                 })
@@ -61,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 });
 
             svg.selectAll('.capitalName')
-                .transition()
+                // .transition()
                 .attr('x', function(d){
                     return projection([d.longitude, d.latitude])[0];
                 })
@@ -110,13 +119,14 @@ document.addEventListener('DOMContentLoaded', function(){
         const direction = d3.select(this).attr('data-zoom');
         
         if(direction === 'in'){
-            scale = 1.25;
+            scale = 1.5;
         }
         else if(direction === 'out'){
-            scale = 0.75;
+            scale = 0.5;
         }
 
-        map.transition()
+        map
+        .transition()
             .call(zoom_map.scaleBy, scale);
     });
 
@@ -128,43 +138,109 @@ document.addEventListener('DOMContentLoaded', function(){
         d3.csv('./assets/covid-us-counties.csv'),
     ];
 
-    Promise.all(files.map(url => (url))).then(function(values){
+    Promise.all(files.map(url => (url))).then(function(values){        
         console.log('values: ', values);
 
-        const filterDate = '2020-10-26'.split('-').join('');
-
-        // filter covid data by selected date
-        const filteredCovidData = values[2].filter(function(val){
-            const date = val.date.split('-').join('');
-
-            return filterDate === date;
+        // find available dates for dropdown menu
+        const availableDates = [];
+        values[2].forEach(function(val){
+            const index = availableDates.indexOf(val.date);
+            if(index === -1){
+                availableDates.push(val.date);
+            }
         });
 
-        console.log('filteredCovidData: ', filteredCovidData);        
+        console.log('availableDates: ', availableDates);
 
-        // topojson feature converts
-        const counties = topojson.feature(values[0], values[0].objects.counties).features;
-        console.log('counties: ', counties);
+        // update select date dropdown menu
+        availableDates.forEach(function(val){
+            $('#selectDate').append(`
+                <option value='${val}'>${val}</option>
+            `);
+        });
 
-        // combine filtered covid data with county map data
-        counties.forEach(function(county_value, county_index){
-            filteredCovidData.forEach(function(covid_value, covid_index){
-                if(covid_value.fips === county_value.id){
-                    counties[county_index].properties.covidCases = parseFloat(covid_value.cases);
-                    counties[county_index].properties.covidDeaths = parseFloat(covid_value.deaths);                    
-                }
+        // dropdown change event
+        $('#selectDate').on('change', function(){
+            // const filterDate = '2020-10-26'.split('-').join('');
+            const filterDate = $(this).val().split('-').join('');
+            console.log('filterDate: ', filterDate);
+
+            // filter covid data by selected date
+            const filteredCovidData = values[2].filter(function(val){
+                const date = val.date.split('-').join('');
+    
+                return filterDate === date;
             });
+    
+            console.log('filteredCovidData: ', filteredCovidData);        
+    
+            // topojson feature converts
+            const counties = topojson.feature(values[0], values[0].objects.counties).features;
+            console.log('counties: ', counties);
+    
+            // combine filtered covid data with county map data
+            counties.forEach(function(county_value, county_index){
+                filteredCovidData.forEach(function(covid_value, covid_index){
+                    if(covid_value.fips === county_value.id){
+                        counties[county_index].properties.covidCases = parseFloat(covid_value.cases);
+                        counties[county_index].properties.covidDeaths = parseFloat(covid_value.deaths);                    
+                    }
+                });
+            });
+    
+            console.log('added corona data to counties: ', counties);
+    
+            color.domain([10, 100, 1000, 10000, 100000]);
+
+            updateCounties(counties);
         });
 
-        console.log('added corona data to counties: ', counties);
+        // keep track of current index of select el
+        let globalCurrentSelectElIndex = availableDates.length - 1;
 
-        color.domain([10, 100, 1000, 10000, 100000]);
+        // dropdown menu
+        $('#selectDate').val(availableDates[globalCurrentSelectElIndex]).trigger('change');
+        // display latest date
+        $('.displayLatestDateOfData').text(availableDates[availableDates.length - 1]);
+
+        //
+        $('#nextDayButton').css('opacity', 0.5).prop('disabled', true);
+
+        $('#previoudDayButton').on('click', function(){
+            if(globalCurrentSelectElIndex != 0){
+                globalCurrentSelectElIndex --;
+                $('#selectDate').val(availableDates[globalCurrentSelectElIndex]).trigger('change');
+
+                if(globalCurrentSelectElIndex === 0){
+                    $('#previoudDayButton').css('opacity', 0.5).prop('disabled', true);
+                }
+
+                if(globalCurrentSelectElIndex !== (availableDates.length - 1)){
+                    $('#nextDayButton').css('opacity', 1).prop('disabled', false);
+                }
+            }
+        });
+
+        $('#nextDayButton').on('click', function(){
+            if(globalCurrentSelectElIndex != availableDates.length - 1){
+                globalCurrentSelectElIndex ++;
+                $('#selectDate').val(availableDates[globalCurrentSelectElIndex]).trigger('change');
+
+                if(globalCurrentSelectElIndex === (availableDates.length - 1)){
+                    $('#nextDayButton').css('opacity', 0.5).prop('disabled', true);
+                }
+
+                if(globalCurrentSelectElIndex !== 0){
+                    $('#previousDayButton').css('opacity', 1).prop('disabled', false);
+                }
+            }
+        });
 
         // display confirmed cases and deaths
         let totalConfirmedCasesNum = 0;
         let totalDeathsNum = 0;
         values[2].forEach(function(val){
-            if(val.date === '2020-11-23'){
+            if(val.date === availableDates[availableDates.length - 1]){
                 totalConfirmedCasesNum += Number(val.cases);
                 totalDeathsNum += Number(val.deaths);
             }
@@ -174,8 +250,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
         d3.select('#confirmedCasesInUS').text(numberWithCommas(totalConfirmedCasesNum));
         d3.select('#deathsInUS').text(numberWithCommas(totalDeathsNum));
-
-        updateCounties(counties);
 
         function updateCounties(counties){
             const countySelection = map.selectAll('.county');
@@ -188,7 +262,6 @@ document.addEventListener('DOMContentLoaded', function(){
                 .attr('fill', function(d){
                     const cases = d.properties.covidCases;
                     return cases ? color(cases) : '#fff';
-                    // return cases ? d3.interpolateYlOrRd(Math.log(cases)/Math.log(10)/6) : '#fff';
                 })
                 .attr('stroke', 'transparent')
                 .attr('stroke-width', 1)
@@ -214,12 +287,13 @@ document.addEventListener('DOMContentLoaded', function(){
                         .style('opacity', 0);
                 });
 
-            bindingCountyData.select('.county')
-                .attr('fill', function(d){
+            bindingCountyData.attr('fill', function(d){
                     const cases = d.properties.covidCases;
                     return cases ? color(cases) : '#fff';
-                    // return cases ? d3.interpolateYlOrRd(Math.log(cases)/Math.log(10)/6) : '#fff';
                 });
+
+            // loading icon------------------------------------
+            $('#loading').css('display', 'none');
         }
         
 
@@ -276,15 +350,15 @@ document.addEventListener('DOMContentLoaded', function(){
                 .scale(1);
 
             svg.selectAll('.county')
-                .transition()
+                // .transition()
                 .attr('d', path);
 
             svg.selectAll('.state')
-                .transition()
+                // .transition()
                 .attr('d', path);
 
             svg.selectAll('.capitalCircle')
-                .transition()
+                // .transition()
                 .attr('cx', function(d){
                     return projection([d.longitude, d.latitude])[0];
                 })
@@ -293,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 });
 
             svg.selectAll('.capitalName')
-                .transition()
+                // .transition()
                 .attr('x', function(d){
                     return projection([d.longitude, d.latitude])[0];
                 })

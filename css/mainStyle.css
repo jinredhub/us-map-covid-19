@@ -28,7 +28,7 @@ section{
 #loading{
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.3);
     display: none;
     justify-content: center;
     align-items: center;
@@ -134,6 +134,13 @@ section{
     display: inline-block;
     color: rgba(0, 0, 0, 0.6);
 }
+#selectDate{
+    width: 150px;
+}
+#previoudDayButton, #nextDayButton{
+    background-color: transparent;
+    cursor: pointer;
+}
 .garadientImageDiv{
     padding: 20px 20px 20px 0;
     display: flex;
@@ -155,7 +162,16 @@ section{
     position: absolute;
     transform: translateX(-50%);
 }
-
+.showMoreButton{
+    max-width: 600px;
+    display: block;
+    margin: 50px auto 10px auto;
+    background-color: transparent;
+    border: 1px solid black;
+    border-radius: 0;
+    font-family: 'Pragati Narrow', sans-serif;
+    font-weight: bold;
+}
 .coronaVirusTableContainer{
     overflow-x: auto;
 }
@@ -182,3 +198,42 @@ section{
         padding: 4px 2px;
     }
 }
+
+
+
+/* footer ======================================== */
+#footer{
+    color: #626262;
+    height: 130px;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-top: 1px solid black;
+}
+#footer a{
+    border-radius: 100px !important;
+    padding: 13px 16px !important;
+    font-size: 18px !important;
+    color: white !important;
+}
+#footer .linkedin{
+    background-color: #007bff;
+}
+#footer .linkedin:hover{
+    background-color: #0069b9;
+}
+#footer .linkedin:active{
+    background-color: #015a9e;
+}
+#footer .github{
+    background-color: white;
+}
+#footer .github:hover{
+    background-color: #e0e0e0;
+}
+#footer .github:active{
+    background-color: #d3d3d3;
+}
+

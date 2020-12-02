@@ -20,6 +20,8 @@
 
     <!-- d3 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js"></script>
+    <!-- d3 group -->
+    <script src="https://d3js.org/d3-array.v2.min.js"></script>
     <!-- <script src="https://d3js.org/topojson.v2.min.js"></script> -->
     <!-- Topojson library -->
     <script src="https://unpkg.com/topojson@3"></script>
@@ -36,7 +38,7 @@
         <div>
             <a href="https://jinredhub.github.io/arpeggios/">Arpeggios</a>
             <a href="https://jinredhub.github.io/daw/">DAW</a>            
-            <a href="https://jinredhub.github.io/us-map-covid-19/" class='active'>Map</a>            
+            <a href="https://jinredhub.github.io/us-map-covid-19/" class='active'>Covid Map</a>            
         </div>
 
         <button type='button' id='questionButton'><i class="fas fa-question" style='font-size: 21px; color: #646464;'></i></button>
@@ -67,7 +69,9 @@
                 
             </div>
             
-            <div id='renderMap'></div>
+            <div id='renderMap'>
+                <div id="loadingSvg"><i class="fas fa-spinner fa-spin"></i></div>
+            </div>
             
             <div class='disp-flex justify-content--center'>
                 <button type='button' class='btn' id='previoudDayButton'><i class="fas fa-caret-left" style='font-size: 24px;'></i></button>
@@ -102,6 +106,7 @@
                     </tbody>
                 </table>  
 
+                <img src="./assets/white-gradient.png" alt="" class='whiteGradientImg'>
                 <button type='button' class='btn btn-long showMoreButton'>SHOW MORE</button>
             </div>
 

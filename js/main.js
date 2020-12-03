@@ -22,80 +22,123 @@ document.addEventListener('DOMContentLoaded', function(){
         .style('background-color', '#fff');
 
     const projection = d3.geoAlbersUsa()
-        .translate([0, 0]);
+        .translate([chart_width / 2, chart_height / 2])
+        .scale(chart_width);
 
     const path = d3.geoPath(projection);
 
-    const zoom_map = d3.zoom()
-        .scaleExtent([0.5, 3.0])
-        .translateExtent([
-            [-1000, -500],
-            [1000, 500]
-        ])
-        .on('zoom', function(){
-            const offset = [
-                d3.event.transform.x,
-                d3.event.transform.y
-            ];
-
-            const scale = d3.event.transform.k * 2000;
-
-            // update projection
-            projection.translate(offset)
-                .scale(scale);
-            
-            // update all shapes and paths
-            svg.selectAll('.county')
-                .transition()
-                .attr('d', path);
-
-            svg.selectAll('.state')
-                .transition()
-                .attr('d', path);
-
-            // svg.selectAll('.capitalCircle')
-            //     // .transition()
-            //     .attr('cx', function(d){
-            //         return projection([d.longitude, d.latitude])[0];
-            //     })
-            //     .attr('cy', function(d){
-            //         return projection([d.longitude, d.latitude])[1];
-            //     });
-
-            // svg.selectAll('.capitalName')
-            //     // .transition()
-            //     .attr('x', function(d){
-            //         return projection([d.longitude, d.latitude])[0];
-            //     })
-            //     .attr('y', function(d){
-            //         return projection([d.longitude, d.latitude])[1] - 7;
-            //     });
-        });
-
     // apply drag event to g element
-    const map = svg.append('g')
-        .attr('id', 'map')
-        .call(zoom_map)
-        .call(
-            zoom_map.transform,
-            d3.zoomIdentity
-                .translate(chart_width / 2, chart_height / 2)
-                .scale(chart_width / 1680)
-        );
+    // const map = svg.append('g')
+    //     .attr('id', 'map')
+        // .call(zoom_map)
+        // .call(
+        //     zoom_map.transform,
+        //     d3.zoomIdentity
+        //         .translate(chart_width / 2, chart_height / 2)
+        //         .scale(chart_width / 1680)
+        // );
         // .style('cursor', 'grab');
+
+    // const zoom_map = d3.zoom()
+    //     .scaleExtent([0.5, 3.0])
+    //     .translateExtent([
+    //         [-1000, -500],
+    //         [1000, 500]
+    //     ])
+    //     .on('zoom', function(){
+    //         const offset = [
+    //             d3.event.transform.x,
+    //             d3.event.transform.y
+    //         ];
+
+    //         const scale = d3.event.transform.k * 2000;
+
+    //         // update projection
+    //         projection.translate(offset)
+    //             .scale(scale);
+            
+    //         // update all shapes and paths
+    //         svg.selectAll('.county')
+    //             .transition()
+    //             .attr('d', path);
+
+    //         svg.selectAll('.state')
+    //             .transition()
+    //             .attr('d', path);
+
+    //         // svg.selectAll('.capitalCircle')
+    //         //     // .transition()
+    //         //     .attr('cx', function(d){
+    //         //         return projection([d.longitude, d.latitude])[0];
+    //         //     })
+    //         //     .attr('cy', function(d){
+    //         //         return projection([d.longitude, d.latitude])[1];
+    //         //     });
+
+    //         // svg.selectAll('.capitalName')
+    //         //     // .transition()
+    //         //     .attr('x', function(d){
+    //         //         return projection([d.longitude, d.latitude])[0];
+    //         //     })
+    //         //     .attr('y', function(d){
+    //         //         return projection([d.longitude, d.latitude])[1] - 7;
+    //         //     });
+    //     });
     
     // use invisible rectangle to cover the map, drag event will apply to this
-    map.append('rect')
-        .attr('x', 0)
-        .attr('y', 0)
-        .attr('width', chart_width)
-        .attr('height', chart_height)
-        .attr('opacity', 0);
+    // map.append('rect')
+    //     .attr('x', 0)
+    //     .attr('y', 0)
+    //     .attr('width', chart_width)
+    //     .attr('height', chart_height)
+    //     .attr('opacity', 0);
+
+    // new 3
+    const map = svg.append('g')
+        .attr('id', 'map');
+
+    // new 2
+    const zoom = d3.zoom()
+        .scaleExtent([1, 4])
+        // .translateExtent([
+        //     [-800, -450],
+        //     [0, 50]
+        // ])
+        .on('zoom', function(){
+            // use svg transforms to avoid the overhead of reprojecting at every zoom iteration
+            // canvas_width = 817, canvas_height = 490
+            // scale = 1: x, y need to be 0 
+            // scale = 2: x, y smaller than 0 and -817, -490
+            // scale = 4
+            console.log('d3.event.transform: ', d3.event.transform);
+            let x = d3.event.transform.x;
+            let y = d3.event.transform.y;
+            const k = d3.event.transform.k;
+           
+            if(x > 0){
+                d3.event.transform.x = 0;
+            }
+            else if(x < (k - 1) * -chart_width){
+                d3.event.transform.x = (k - 1) * -chart_width;
+            }
+            if(y > 0){
+                d3.event.transform.y = 0;
+            }
+            else if(y < (k - 1) * -chart_height){
+                d3.event.transform.y = (k - 1) * -chart_height;
+            }
+
+            map.attr('transform', d3.event.transform);
+        });
+
+    // new 1
+    svg.call(zoom);
 
     const tooltip = d3.select('#renderMap')
         .append('div')
         .attr('class', 'tooltip')
-        .style('opacity', 0);
+        .style('opacity', 0)
+        .style('display', 'none');
 
     // display controller
     // d3.select('#renderMap')
@@ -291,10 +334,34 @@ document.addEventListener('DOMContentLoaded', function(){
                     return cases ? color(cases) : '#fff';
                 })
                 .attr('stroke', 'transparent')
-                .attr('stroke-width', 1)
+                .attr('stroke-width', 1) 
                 .on('mouseover', function(d){
+                    // console.log('d: ', d);
+                    // console.log('getBBox: ', this.getBBox());
+
+                    // distance from virport top/left 
+                    // console.log('this.getBoundingClientRect(): ',this.getBoundingClientRect());
+                    const svgRect = document.querySelector('#renderMap').getBoundingClientRect();
+                    console.log('svgRect: ', svgRect);
+                    // distance from whole document (mouse event)
+                    console.log('pagex, pagey: ', d3.event.pageX, d3.event.pageY);
+                    // console.log('this: ', this);
+
+                    // const pathRect = this.getBoundingClientRect();
+                    // console.log('pathRect: ', pathRect);
+
+                    // scrollTop: 
+                    const documentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    console.log('documentScrollTop: ', documentScrollTop);
+
+                    const x = d3.event.pageX - Math.round(svgRect.x);
+                    const y = d3.event.pageY - Math.round(svgRect.y) - Math.round(documentScrollTop);
+
+                    console.log('x, y: ', x, y);
+
                     tooltip.transition()
                         .duration(200)
+                        .style('display', 'block')
                         .style('opacity', 0.9);
                     tooltip.html(`
                             <strong>${d.properties.name}</strong><br>
@@ -304,14 +371,19 @@ document.addEventListener('DOMContentLoaded', function(){
 
                     const tooltipWidth = document.querySelector('.tooltip').offsetWidth;
                     const tooltipHeight = document.querySelector('.tooltip').offsetHeight;
+                    console.log('tooltip with, height: ', tooltipWidth, tooltipHeight);
 
-                    tooltip.style('left', d3.mouse(this)[0] - (tooltipWidth / 2) + 'px')
-                        .style('top', d3.mouse(this)[1] - (tooltipHeight + 24) + 'px');
+                    // tooltip.style('left', d3.mouse(this)[0] - (tooltipWidth / 2) + 'px')
+                    //     .style('top', d3.mouse(this)[1] - (tooltipHeight + 24) + 'px');
+                    tooltip.style('left', x - (tooltipWidth / 2) + 'px')
+                        .style('top', y - (tooltipHeight + 24) + 'px');
+
                 })
                 .on('mouseout', function(d){
                     tooltip.transition()
                         .duration(200)
-                        .style('opacity', 0);
+                        .style('opacity', 0)
+                        .style('display', 'none');
                 });
 
             bindingCountyData.attr('fill', function(d){
@@ -383,7 +455,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 .attr('width', chart_width)
                 .attr('height', chart_height);
 
-            // update projection
+            // // update projection
             projection
                 .translate([chart_width / 2, chart_height / 2])
                 .scale(chart_width);

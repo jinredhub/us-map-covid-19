@@ -93,23 +93,13 @@ document.addEventListener('DOMContentLoaded', function(){
     //     .attr('height', chart_height)
     //     .attr('opacity', 0);
 
-    // new 3
     const map = svg.append('g')
         .attr('id', 'map');
 
-    // new 2
     const zoom = d3.zoom()
         .scaleExtent([1, 4])
-        // .translateExtent([
-        //     [-800, -450],
-        //     [0, 50]
-        // ])
         .on('zoom', function(){
             // use svg transforms to avoid the overhead of reprojecting at every zoom iteration
-            // canvas_width = 817, canvas_height = 490
-            // scale = 1: x, y need to be 0 
-            // scale = 2: x, y smaller than 0 and -817, -490
-            // scale = 4
             console.log('d3.event.transform: ', d3.event.transform);
             let x = d3.event.transform.x;
             let y = d3.event.transform.y;
@@ -131,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function(){
             map.attr('transform', d3.event.transform);
         });
 
-    // new 1
     svg.call(zoom);
 
     const tooltip = d3.select('#renderMap')
@@ -141,29 +130,40 @@ document.addEventListener('DOMContentLoaded', function(){
         .style('display', 'none');
 
     // display controller
-    // d3.select('#renderMap')
-    //     .append('div')
-    //     .attr('class', 'controller')
-    //     .html(`
-    //         <button type='button' id='zoomIn' data-zoom='in'><i class="fas fa-plus"></i></button><br>
-    //         <hr>
-    //         <button type='button' id='zoomIn' data-zoom='out'><i class="fas fa-minus"></i></button>
-    //     `);
+    d3.select('#renderMap')
+        .append('div')
+        .attr('class', 'controller')
+        .html(`
+            <button type='button' id='zoomIn' data-zoom='in'><i class="fas fa-plus"></i></button><br>
+            <hr>
+            <button type='button' id='zoomIn' data-zoom='out'><i class="fas fa-minus"></i></button>
+        `);
 
     d3.selectAll('.controller button').on('click', function(){
-        let scale = 1;
         const direction = d3.select(this).attr('data-zoom');
-        
+
         if(direction === 'in'){
-            scale = 1.5;
+            zoom.scaleBy(svg.transition().duration(750), 2);
         }
         else if(direction === 'out'){
-            scale = 0.5;
+            zoom.scaleBy(svg.transition().duration(750), 0.5);
         }
 
-        map
-        .transition()
-            .call(zoom_map.scaleBy, scale);
+
+        // original code------------------------------------------
+        // let scale = 1;
+        // const direction = d3.select(this).attr('data-zoom');
+        
+        // if(direction === 'in'){
+        //     scale = 1.5;
+        // }
+        // else if(direction === 'out'){
+        //     scale = 0.5;
+        // }
+
+        // map
+        // .transition()
+        //     .call(zoom_map.scaleBy, scale);
     });
 
     // load files
@@ -336,47 +336,33 @@ document.addEventListener('DOMContentLoaded', function(){
                 .attr('stroke', 'transparent')
                 .attr('stroke-width', 1) 
                 .on('mouseover', function(d){
-                    // console.log('d: ', d);
-                    // console.log('getBBox: ', this.getBBox());
-
-                    // distance from virport top/left 
-                    // console.log('this.getBoundingClientRect(): ',this.getBoundingClientRect());
                     const svgRect = document.querySelector('#renderMap').getBoundingClientRect();
-                    console.log('svgRect: ', svgRect);
-                    // distance from whole document (mouse event)
-                    console.log('pagex, pagey: ', d3.event.pageX, d3.event.pageY);
-                    // console.log('this: ', this);
-
-                    // const pathRect = this.getBoundingClientRect();
-                    // console.log('pathRect: ', pathRect);
-
-                    // scrollTop: 
                     const documentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    console.log('documentScrollTop: ', documentScrollTop);
 
                     const x = d3.event.pageX - Math.round(svgRect.x);
                     const y = d3.event.pageY - Math.round(svgRect.y) - Math.round(documentScrollTop);
-
-                    console.log('x, y: ', x, y);
-
-                    tooltip.transition()
-                        .duration(200)
-                        .style('display', 'block')
-                        .style('opacity', 0.9);
-                    tooltip.html(`
-                            <strong>${d.properties.name}</strong><br>
-                            Confirmed: <span style='color: red; font-weight: bold;'>${d.properties.covidCases ? numberWithCommas(d.properties.covidCases) : 0}</span> cases<br>
-                            Deaths: <span style='color: red; font-weight: bold;'>${d.properties.covidDeaths ? numberWithCommas(d.properties.covidDeaths) : 0}</span>
-                        `);
 
                     const tooltipWidth = document.querySelector('.tooltip').offsetWidth;
                     const tooltipHeight = document.querySelector('.tooltip').offsetHeight;
                     console.log('tooltip with, height: ', tooltipWidth, tooltipHeight);
 
+
+                    tooltip.html(`
+                        <strong>${d.properties.name}</strong><br>
+                        Confirmed: <span style='color: red; font-weight: bold;'>${d.properties.covidCases ? numberWithCommas(d.properties.covidCases) : 0}</span> cases<br>
+                        Deaths: <span style='color: red; font-weight: bold;'>${d.properties.covidDeaths ? numberWithCommas(d.properties.covidDeaths) : 0}</span>
+                    `);
+
                     // tooltip.style('left', d3.mouse(this)[0] - (tooltipWidth / 2) + 'px')
                     //     .style('top', d3.mouse(this)[1] - (tooltipHeight + 24) + 'px');
                     tooltip.style('left', x - (tooltipWidth / 2) + 'px')
                         .style('top', y - (tooltipHeight + 24) + 'px');
+                    
+                    tooltip.transition()
+                        .duration(200)
+                        .style('display', 'block')
+                        .style('opacity', 0.9)
+                        .style('pointer-events', 'none');
 
                 })
                 .on('mouseout', function(d){

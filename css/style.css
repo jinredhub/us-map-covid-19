@@ -741,53 +741,14 @@ body{
 }
 /*google fonts-------------------------------------*/
 
-/* form */
-    .form-footer{
-        display: none !important;
-    }
-/* end form */
 
-/* for kena.ai-------------------------------------- */
-.form-cont-line{
-    display: block;
-    width: 100%;
-    padding: 16px 0;
-    font-size: 1rem;
-    color: #495057;
-    background-color: transparent;
-    border: none;
-    border-bottom: 1px solid #ced4da;
-    border-radius: 0;
-}
-.form-cont-line:focus{
-    /* border-color: #ffe480; */
-    /* box-shadow: 0 0 0 0.1rem rgba(255, 153, 0, 0.25); */
-    border-bottom: 1px solid black;
-    outline: 0;
-}
-
-.link{
-    color: #e67474;
-    text-decoration: none;
-    font-weight: bold;
-    text-decoration: none;
-}
-.link:hover{
-    text-decoration: underline;
-}
 /* button */
 .btn-long{
     width: 100%;
 }
-.btn{
-    border-radius: 100px;
-}
-
 .hide-desktop{
     display: none !important;
 }
-
-/* end for kena.ai */
 
 
 /*media query----------------------------------------*/

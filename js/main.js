@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     tooltip.transition()
                         .duration(200)
                         .style('display', 'block')
-                        .style('opacity', 0.9)
+                        .style('opacity', 1)
                         .style('pointer-events', 'none');
                 })
                 .on('mouseout', function(d){

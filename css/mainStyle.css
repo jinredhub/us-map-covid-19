@@ -79,7 +79,7 @@ section{
 .tooltip{
     position: absolute;
     z-index: 1001;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.9);
     color: #333;
     padding: 6px 12px;
     border: 1px solid #000;

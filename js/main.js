@@ -1,10 +1,8 @@
 document.addEventListener('DOMContentLoaded', function(){
-    // loading icon------------------------------------
+    // loading icon
     $('#loading').css('display', 'flex');
 
     let chart_width = $('.tabcontent').width();
-    // const chart_width = document.querySelector('.tabcontent').getBoundingClientRect();
-    console.log('chart_width: ', chart_width);
     let chart_height = chart_width * 0.6;
     const color = d3.scaleThreshold().range([
         'rgb(255,255,178)',
@@ -27,72 +25,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
     const path = d3.geoPath(projection);
 
-    // apply drag event to g element
-    // const map = svg.append('g')
-    //     .attr('id', 'map')
-        // .call(zoom_map)
-        // .call(
-        //     zoom_map.transform,
-        //     d3.zoomIdentity
-        //         .translate(chart_width / 2, chart_height / 2)
-        //         .scale(chart_width / 1680)
-        // );
-        // .style('cursor', 'grab');
-
-    // const zoom_map = d3.zoom()
-    //     .scaleExtent([0.5, 3.0])
-    //     .translateExtent([
-    //         [-1000, -500],
-    //         [1000, 500]
-    //     ])
-    //     .on('zoom', function(){
-    //         const offset = [
-    //             d3.event.transform.x,
-    //             d3.event.transform.y
-    //         ];
-
-    //         const scale = d3.event.transform.k * 2000;
-
-    //         // update projection
-    //         projection.translate(offset)
-    //             .scale(scale);
-            
-    //         // update all shapes and paths
-    //         svg.selectAll('.county')
-    //             .transition()
-    //             .attr('d', path);
-
-    //         svg.selectAll('.state')
-    //             .transition()
-    //             .attr('d', path);
-
-    //         // svg.selectAll('.capitalCircle')
-    //         //     // .transition()
-    //         //     .attr('cx', function(d){
-    //         //         return projection([d.longitude, d.latitude])[0];
-    //         //     })
-    //         //     .attr('cy', function(d){
-    //         //         return projection([d.longitude, d.latitude])[1];
-    //         //     });
-
-    //         // svg.selectAll('.capitalName')
-    //         //     // .transition()
-    //         //     .attr('x', function(d){
-    //         //         return projection([d.longitude, d.latitude])[0];
-    //         //     })
-    //         //     .attr('y', function(d){
-    //         //         return projection([d.longitude, d.latitude])[1] - 7;
-    //         //     });
-    //     });
-    
-    // use invisible rectangle to cover the map, drag event will apply to this
-    // map.append('rect')
-    //     .attr('x', 0)
-    //     .attr('y', 0)
-    //     .attr('width', chart_width)
-    //     .attr('height', chart_height)
-    //     .attr('opacity', 0);
-
     const map = svg.append('g')
         .attr('id', 'map');
 
@@ -100,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function(){
         .scaleExtent([1, 4])
         .on('zoom', function(){
             // use svg transforms to avoid the overhead of reprojecting at every zoom iteration
-            console.log('d3.event.transform: ', d3.event.transform);
+            // console.log('d3.event.transform: ', d3.event.transform);
             let x = d3.event.transform.x;
             let y = d3.event.transform.y;
             const k = d3.event.transform.k;
@@ -148,22 +80,6 @@ document.addEventListener('DOMContentLoaded', function(){
         else if(direction === 'out'){
             zoom.scaleBy(svg.transition().duration(750), 0.5);
         }
-
-
-        // original code------------------------------------------
-        // let scale = 1;
-        // const direction = d3.select(this).attr('data-zoom');
-        
-        // if(direction === 'in'){
-        //     scale = 1.5;
-        // }
-        // else if(direction === 'out'){
-        //     scale = 0.5;
-        // }
-
-        // map
-        // .transition()
-        //     .call(zoom_map.scaleBy, scale);
     });
 
     // load files
@@ -174,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function(){
     ];
 
     Promise.all(files.map(url => (url))).then(function(values){        
-        console.log('values: ', values);
+        // console.log('values: ', values);
 
         // find available dates for dropdown menu
         const availableDates = [];
@@ -185,8 +101,6 @@ document.addEventListener('DOMContentLoaded', function(){
             }
         });
 
-        // console.log('availableDates: ', availableDates);
-
         // update select date dropdown menu
         availableDates.forEach(function(val){
             $('#selectDate').append(`
@@ -194,25 +108,9 @@ document.addEventListener('DOMContentLoaded', function(){
             `);
         });
 
-        // /////////////////////////////////////////////////
-        // create map using rollup here!! It's faster than obj
-        // ///////////////////////////////////////////////
-        // group
+        // create map of dates for faster search result
         const covidDataGroupedByDateMap = d3.group(values[2], d => d.date);
-        console.log('covidDataGroupedByDateMap: ', covidDataGroupedByDateMap);
-
-        // const covidDataGroupedByDateObj = {};
-        // values[2].forEach(function(val){
-        //     if(covidDataGroupedByDateObj[val.date]){
-        //         covidDataGroupedByDateObj[val.date].push(val);
-        //     }
-        //     else{
-        //         covidDataGroupedByDateObj[val.date] = [];
-        //         covidDataGroupedByDateObj[val.date].push(val);
-        //     }
-        // });
-        
-        // console.log('covidDataGroupedByDateObj: ', covidDataGroupedByDateObj);
+        // console.log('covidDataGroupedByDateMap: ', covidDataGroupedByDateMap);
 
         // topojson feature converts
         const counties = topojson.feature(values[0], values[0].objects.counties).features;
@@ -242,11 +140,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 $('#nextDayButton').css('opacity', 1).prop('disabled', false);
             }
 
-            console.log('covidDataGroupedByDateMap[filterDate]:', covidDataGroupedByDateMap.get(filterDate));
-            // console.log('filterDate: ', filterDate);
-
-            // console.log( 'covidDataGroupedByDateObj: ', covidDataGroupedByDateObj);
-            // console.log( 'covidDataGroupedByDateObj[filterDate]: ', covidDataGroupedByDateObj[filterDate]);
+            // console.log('covidDataGroupedByDateMap.get(filterDate):', covidDataGroupedByDateMap.get(filterDate));
     
             // reset all covid cases and deaths
             counties.forEach(function(val){
@@ -261,15 +155,12 @@ document.addEventListener('DOMContentLoaded', function(){
                         counties[county_index].properties.covidCases = covid_value.cases ? Number(covid_value.cases) : 0;
                         counties[county_index].properties.covidDeaths = covid_value.deaths ? Number(covid_value.deaths) : 0;                    
                     }
-                    else{
-
-                    }
                 });
             });
     
-            console.log('added corona data to counties: ', counties);
+            // console.log('added corona data to counties: ', counties);
 
-            // loading icon on svg------------------------------------
+            // loading icon on svg
             $('#loadingSvg').css('display', 'flex');
             
             setTimeout(function(){
@@ -284,16 +175,13 @@ document.addEventListener('DOMContentLoaded', function(){
         $('#selectDate').val(availableDates[globalCurrentSelectElIndex]).trigger('change');
         // display latest date
         $('.displayLatestDateOfData').text(availableDates[availableDates.length - 1]);
-
-        //
+        // disable next day button
         $('#nextDayButton').css('opacity', 0.5).prop('disabled', true);
 
         $('#previoudDayButton').on('click', function(){
             if(globalCurrentSelectElIndex != 0){
                 globalCurrentSelectElIndex --;
                 $('#selectDate').val(availableDates[globalCurrentSelectElIndex]).trigger('change');
-
-
             }
         });
 
@@ -301,8 +189,6 @@ document.addEventListener('DOMContentLoaded', function(){
             if(globalCurrentSelectElIndex != availableDates.length - 1){
                 globalCurrentSelectElIndex ++;
                 $('#selectDate').val(availableDates[globalCurrentSelectElIndex]).trigger('change');
-
-
             }
         });
 
@@ -344,8 +230,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
                     const tooltipWidth = document.querySelector('.tooltip').offsetWidth;
                     const tooltipHeight = document.querySelector('.tooltip').offsetHeight;
-                    console.log('tooltip with, height: ', tooltipWidth, tooltipHeight);
-
 
                     tooltip.html(`
                         <strong>${d.properties.name}</strong><br>
@@ -353,8 +237,6 @@ document.addEventListener('DOMContentLoaded', function(){
                         Deaths: <span style='color: red; font-weight: bold;'>${d.properties.covidDeaths ? numberWithCommas(d.properties.covidDeaths) : 0}</span>
                     `);
 
-                    // tooltip.style('left', d3.mouse(this)[0] - (tooltipWidth / 2) + 'px')
-                    //     .style('top', d3.mouse(this)[1] - (tooltipHeight + 24) + 'px');
                     tooltip.style('left', x - (tooltipWidth / 2) + 'px')
                         .style('top', y - (tooltipHeight + 24) + 'px');
                     
@@ -363,7 +245,6 @@ document.addEventListener('DOMContentLoaded', function(){
                         .style('display', 'block')
                         .style('opacity', 0.9)
                         .style('pointer-events', 'none');
-
                 })
                 .on('mouseout', function(d){
                     tooltip.transition()
@@ -377,17 +258,16 @@ document.addEventListener('DOMContentLoaded', function(){
                     return cases ? color(cases) : '#fff';
                 });
 
-            // loading icon------------------------------------
+            // loading icon
             $('#loading').css('display', 'none');
 
-            // loading icon on svg------------------------------------
+            // loading icon on svg
             $('#loadingSvg').css('display', 'none');
         }
         
-
         // topojson feature converts
         const states = topojson.feature(values[0], values[0].objects.states).features;
-        console.log('states: ', states);
+        // console.log('states: ', states);
 
         map.selectAll('.state')
             .data(states)
@@ -397,31 +277,13 @@ document.addEventListener('DOMContentLoaded', function(){
             .attr('d', path)
             .attr('fill', 'none')
             .attr('stroke', '#3b3b3b')
-            .attr('stroke-width', 1)
-            .on('click', function(d){
-                console.log('clicked state');
-                d3.select(this).classed('selected', true);
-            });
-            
-        // map.selectAll('.capitalCircle')
-        //     .data(values[1])
-        //     .enter()
-        //     .append('circle')
-        //     .classed('capitalCircle', true)
-        //     .style('fill', '#000000')
-        //     .attr('cx', function(d){
-        //         return projection([d.longitude, d.latitude])[0];
-        //     })
-        //     .attr('cy', function(d){
-        //         return projection([d.longitude, d.latitude])[1];
-        //     })
-        //     .attr('r', 2);
+            .attr('stroke-width', 1);
 
         renderTable(values[2], false);
 
         // show more button
         $('.showMoreButton').on('click', function(){
-            // loading icon------------------------------------
+            // loading icon
             $('#loading').css('display', 'flex');
 
             setTimeout(function(){
@@ -441,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 .attr('width', chart_width)
                 .attr('height', chart_height);
 
-            // // update projection
+            // update projection
             projection
                 .translate([chart_width / 2, chart_height / 2])
                 .scale(chart_width);
@@ -453,64 +315,7 @@ document.addEventListener('DOMContentLoaded', function(){
             svg.selectAll('.state')
                 // .transition()
                 .attr('d', path);
-
-            // svg.selectAll('.capitalCircle')
-            //     // .transition()
-            //     .attr('cx', function(d){
-            //         return projection([d.longitude, d.latitude])[0];
-            //     })
-            //     .attr('cy', function(d){
-            //         return projection([d.longitude, d.latitude])[1];
-            //     });
-
-            // svg.selectAll('.capitalName')
-            //     // .transition()
-            //     .attr('x', function(d){
-            //         return projection([d.longitude, d.latitude])[0];
-            //     })
-            //     .attr('y', function(d){
-            //         return projection([d.longitude, d.latitude])[1] - 7;
-            //     });
-
         });
-
-        // map.selectAll('.capitalName')
-        //     .data(values[1])
-        //     .enter()
-        //     .append('text')
-        //     .classed('capitalName', true)
-        //     .attr('id', function(d){
-        //         console.log('d: ', d)
-        //         // return 'capitalName' + d.fips;
-        //     })
-        //     .text(function(d){
-        //         return d.description;
-        //     })
-        //     .attr('x', function(d){
-        //         return projection([d.longitude, d.latitude])[0];
-        //     })
-        //     .attr('y', function(d){
-        //         return projection([d.longitude, d.latitude])[1] - 7;
-        //     })
-        //     .style('text-anchor', 'middle')
-        //     .style('font-size', '10')
-        //     .style('font-family', 'sans-serif');
-            
-        // map.selectAll('.rectBehindCapitalName')
-        //     .data(values[1])
-        //     .enter()
-        //     .append('rect')
-        //     .classed('rectBehindCapitalName', true)
-        //     .attr('x', function(d){
-        //         return projection([d.longitude, d.latitude])[0];
-        //     })
-        //     .attr('y', function(d){
-        //         return projection([d.longitude, d.latitude])[1] - 7;
-        //     })
-        //     .attr('width', '20')
-        //     .attr('height', '20')
-        //     .style('fill', 'green');
-
     });
 
     function numberWithCommas(x) {
@@ -552,11 +357,7 @@ document.addEventListener('DOMContentLoaded', function(){
             $('.whiteGradientImg').hide();
         }
 
-        // loading icon------------------------------------
+        // loading icon
         $('#loading').css('display', 'none');
     }
-
-
-    
-
 });

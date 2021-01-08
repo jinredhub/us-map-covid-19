@@ -6,7 +6,7 @@
 
 body{
     font-family: 'Quicksand', sans-serif;
-    background-color: #d6f4ff;
+    background-color: #fff7df;
 }
 section{
     max-width: 900px;
@@ -219,12 +219,12 @@ section{
 #footer{
     color: #626262;
     height: 130px;
-    background-color: #93d0e6;
+    background-color: #e6d093;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    border-top: 1px solid #1aaab9;
+    border-top: 1px solid #b99e1a;
 }
 #footer a{
     border-radius: 100px !important;

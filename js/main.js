@@ -1,4 +1,15 @@
 document.addEventListener('DOMContentLoaded', function(){
+    // toggle between show/hide the mobile navbar menu
+    $('.hamburgerIcon').on('click', function(){
+        const container = document.querySelector('.mobildLinks');
+        if(container.style.display === 'block'){
+            container.style.display = "none";
+        }
+        else{
+            container.style.display = 'block';
+        }
+    });
+    
     // loading icon
     $('#loading').css('display', 'flex');
 

@@ -83,12 +83,13 @@ section{
     border-bottom: 1px solid black;
 }
 .navbar .mobildLinks a{
-    color: #1b1c1d;
+    color: #989898;
     padding: 14px 16px;
     text-decoration: none;
     font-size: 17px;
     display: block;
     background-color: #fcfbfa;
+    font-weight: bold;
 }
 .navbar .mobildLinks a:hover{
     background-color: #e2e2e2;

@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function(){
+    let globalShowMoreClickCount = 0;
+
     // toggle between show/hide the mobile navbar menu
     $('.hamburgerIcon').on('click', function(){
         const container = document.querySelector('.mobildLinks');
@@ -290,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function(){
             .attr('stroke', '#3b3b3b')
             .attr('stroke-width', 1);
 
-        renderTable(values[2], false);
+        renderTable(values[2], globalShowMoreClickCount);
 
         // show more button
         $('.showMoreButton').on('click', function(){
@@ -298,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function(){
             $('#loading').css('display', 'flex');
 
             setTimeout(function(){
-                renderTable(values[2], true);
+                renderTable(values[2], globalShowMoreClickCount);
             }, 100);
         });
 
@@ -339,13 +341,25 @@ document.addEventListener('DOMContentLoaded', function(){
         let filteredData = data.filter(function(val){
             return val.date.split('-').join('') === latestDate;
         });
+
+        console.log('filteredData: ', filteredData);
         
-        if(renderAllRows === false){
+        if(renderAllRows === 0){
+            globalShowMoreClickCount = 1;
             filteredData = filteredData.slice(0, 8);
         }
-
-        // empty table
-        $('.myTable tbody').html('');
+        else if(renderAllRows === 1){
+            globalShowMoreClickCount = 2;
+            filteredData = filteredData.slice(8, 1000);            
+        }
+        else if(renderAllRows === 2){
+            globalShowMoreClickCount = 3;
+            filteredData = filteredData.slice(1000, 2000);  
+        }
+        else if(renderAllRows === 3){
+            // render the rest
+            filteredData = filteredData.slice(2000);  
+        }
 
         filteredData.forEach(function(val){
             if(val.date.split('-').join('') === latestDate){
@@ -360,10 +374,10 @@ document.addEventListener('DOMContentLoaded', function(){
             }
         });
 
-        if(renderAllRows === false){
+        if(renderAllRows != 3){
             $('.showMoreButton').show();
         }
-        else if(renderAllRows === true){
+        else if(renderAllRows === 3){
             $('.showMoreButton').hide();
             $('.whiteGradientImg').hide();
         }

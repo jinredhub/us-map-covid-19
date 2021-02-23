@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function(){
             return val.date.split('-').join('') === latestDate;
         });
 
-        console.log('filteredData: ', filteredData);
+        // console.log('filteredData: ', filteredData);
         
         if(renderAllRows === 0){
             globalShowMoreClickCount = 1;
